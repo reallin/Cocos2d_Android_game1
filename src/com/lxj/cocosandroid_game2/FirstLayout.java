@@ -21,9 +21,13 @@ import android.view.MotionEvent;
 public class FirstLayout extends CCLayer{
 	private static final int TAG_X = 10;
 	private static final int TAG_X1 = 11;
+	private static final int TAG_X2 = 12;
+	private static final int TAG_X3 = 0;
 
 	private CCSprite ccSprite= null;
-	private CCSprite leaf;
+	private CCSprite leaf = null;
+	private CCSprite ccSprite1 = null;
+	private CCSprite ccSprite2 = null;
 	
 public FirstLayout(){
 	//CCSprite sprite = CCSprite.sprite("bg.png");
@@ -32,13 +36,16 @@ public FirstLayout(){
 			// 图片、坐标、画自己的方法;
 			
 	fliX();
+	fliX1();
+	fliX2();
+	fliX3();
 }
 public CCSprite fliX1(){
 	if(leaf==null){
 	leaf = CCSprite.sprite("bg.png");// 图片资源assets文件夹下
-
+	leaf.setScale(0.6);
 	// this.addChild(leaf);
-	this.addChild(ccSprite,1,TAG_X1);
+	this.addChild(leaf,1,TAG_X1);
 
 	//Log.i(TAG, "x:" + leaf.getPosition().x + "y:" + leaf.getPosition().y);
 
@@ -51,7 +58,7 @@ public CCSprite fliX1(){
 public CCSprite fliX(){
 	if(ccSprite==null){
 		ccSprite = CCSprite.sprite("bg.png");
-	
+		ccSprite.setScale(0.6);
 	ccSprite.setFlipX(true);
 	ccSprite.setAnchorPoint(0,0);
 	ccSprite.setPosition(100,0);
@@ -59,28 +66,59 @@ public CCSprite fliX(){
 	}
 	return ccSprite;
 	}
+public CCSprite fliX2(){
+	if(ccSprite1==null){
+		ccSprite1 = CCSprite.sprite("bg.png");
+		ccSprite1.setScale(0.6);
+	ccSprite1.setFlipX(true);
+	ccSprite1.setAnchorPoint(0.5f,0.5f);
+	ccSprite1.setPosition(200+ccSprite1.getBoundingBox().size.width/2,ccSprite1.getBoundingBox().size.height/2);
+	this.addChild(ccSprite1,0,TAG_X2);
+	}
+	return ccSprite1;
+	}
+public CCSprite fliX3(){
+	if(ccSprite2==null){
+		ccSprite2 = CCSprite.sprite("bg.png");
+	ccSprite2.setScale(0.6);
+	ccSprite2.setFlipX(true);
+	ccSprite2.setAnchorPoint(0,0);
+	ccSprite2.setPosition(300,0);
+	this.addChild(ccSprite2,0,TAG_X3);
+	}
+	return ccSprite2;
+	}
 @Override
 public boolean ccTouchesBegan(MotionEvent event) {
 	// TODO Auto-generated method stub
 	CCSprite sprite =  (CCSprite)this.getChildByTag(TAG_X);
 	CCSprite sprite1 =  (CCSprite)this.getChildByTag(TAG_X1);
+	CCSprite sprite2 =  (CCSprite)this.getChildByTag(TAG_X2);
+	CCSprite sprite3 =  (CCSprite)this.getChildByTag(TAG_X3);
 
 	//转成opengl下的坐标点
 	CGPoint cgPoint = this.convertTouchToNodeSpace(event); 
 	boolean flag = CGRect.containsPoint(sprite.getBoundingBox(), cgPoint);
 	boolean flag1 = CGRect.containsPoint(sprite1.getBoundingBox(), cgPoint);
-
+	boolean flag2 = CGRect.containsPoint(sprite2.getBoundingBox(), cgPoint);
+	boolean flag3 = CGRect.containsPoint(sprite3.getBoundingBox(), cgPoint);
 	if(flag){
 		//设置透明度
-		//sprite.setOpacity(100);
+		sprite.setOpacity(100);
 		/*//设置是否可见
 		sprite.setVisible(false);
 		//删除自己
 		sprite.removeSelf();*/
-		move();
+		roate();
 	}
 	if(flag1){
 		scale();	
+	}
+	if(flag2){
+		jump1();
+	}
+	if(flag3){
+		move();
 	}
 	return super.ccTouchesBegan(event);
 }
@@ -93,8 +131,8 @@ private void scale(){
 }
 
 private void roate(){
-	CCRotateBy scaleBy = CCRotateBy.action(0.2f, 100);//100是顺时针100度
-	fliX1().runAction(scaleBy);
+	CCRotateBy scaleBy = CCRotateBy.action(0.2f, 360);//100是顺时针100度
+	fliX().runAction(scaleBy);
 }
 
 private void changeColor(){
@@ -118,7 +156,7 @@ private void jump1(){
 	//每循环一次停一秒
 	CCSequence ccSequence = CCSequence.actions(ccSpawn, ccSpawn.reverse(),CCDelayTime.action(1));
 	CCRepeatForever ccRepeatForever = CCRepeatForever.action(ccSequence);
-   CCSprite sprite = fliX1();
+   CCSprite sprite = fliX2();
    sprite.setAnchorPoint(0.5F, 0.5F);
    
    sprite.runAction(ccRepeatForever);
@@ -128,7 +166,7 @@ private void jump1(){
 private void move(){
 	//设置终点
 	CGPoint point = CGPoint.ccp(300, 150);
-	CCSprite sprite = fliX();
+	CCSprite sprite = fliX3();
 	CCMoveBy moveBy = CCMoveBy.action(1, point);
 	// 按照顺序执行
 			// 将动作串联起来
